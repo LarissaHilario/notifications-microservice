@@ -11,15 +11,7 @@ pipeline {
                 }
             }
         }
-            post {
-                success {
-                    echo 'Las pruebas pasaron exitosamente.'
-                }
-                failure {
-                    echo 'Las pruebas fallaron.'
-                }
-            }
-        }
+       
         stage('Deploy') {
             steps {
                 script {
