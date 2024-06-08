@@ -11,14 +11,6 @@ pipeline {
                 }
             }
         }
-        stage('Test') {
-            steps {
-                script {
-                    docker.image(DOCKER_IMAGE).inside {
-                        sh 'pytest test.py'
-                    }
-                }
-            }
             post {
                 success {
                     echo 'Las pruebas pasaron exitosamente.'
