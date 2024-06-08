@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import pymysql
+import logging
 
 from dotenv import load_dotenv
 
@@ -32,6 +33,8 @@ class DBConnection:
             Base.metadata.create_all(self.engine)
             self.Session = sessionmaker(bind=self.engine)
             print("Conexión exitosa a la base de datos con MySQL LISTA!")
+            logging.info("Conexión exitosa a la base de datos con MySQL LISTA!")
         except Exception as e:
             print(f"Error al conectar a la base de datos: {str(e)}")
+            logging.error(f"Error al conectar a la base de datos: {str(e)}")
             self.Session = None
