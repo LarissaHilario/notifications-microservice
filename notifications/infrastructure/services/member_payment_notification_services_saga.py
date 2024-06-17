@@ -4,7 +4,8 @@ import logging
 from notifications.infrastructure.config.rabbit_config import setup_rabbitmq
 
 class MemeberPaymentNotificationServicesSaga:
-    def __init__(self):
+    def __init__(self, email_services):
+        self.email_services=email_services
         self.queue_name = os.getenv('RABBIT_QUEUE_MEMBER_PAYMENT_RECEIVE')
         self.exchange_name = os.getenv('RABBIT_EXCHANGE_NOTIFICATION')
         self.logger = logging.getLogger(__name__)
@@ -23,6 +24,6 @@ class MemeberPaymentNotificationServicesSaga:
         self.logging.info(f'Received message: {request}')
         email = self.user_repository.get_user_by_id(request['email'])
         product = request['product'] #que estas pagando, pues deberia mostrar aqui que el producto es una membresia
-        self.notification_service.send_notification(email, product)
+        self.email_services.send_email(email, "Payment", f"Your payment for {product} has been received")
         self.logging.info(f'Notification sent to email:  {email}, product: {product}')
         ch.basic_ack(delivery_tag=method.delivery_tag)

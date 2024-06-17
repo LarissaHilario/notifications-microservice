@@ -4,7 +4,8 @@ import logging
 from notifications.infrastructure.config.rabbit_config import setup_rabbitmq
 
 class NewUserNotificationServicesSaga:
-    def __init__(self):
+    def __init__(self, email_services):
+        self.email_services=email_services
         self.queue_name = os.getenv('RABBIT_QUEUE_NEW_USER_NOTIFICATION')
         self.exchange_name = os.getenv('RABBIT_EXCHANGE_NOTIFICATION')
         self.routing_key = os.getenv('RABBIT_ROUTING_KEY_USER_TOKEN')
@@ -23,6 +24,6 @@ class NewUserNotificationServicesSaga:
         request = json.loads(body)
         self.logging.info(f'Received message: {request}')
         email = self.user_repository.get_user_by_id(request['email'])
-        self.notification_service.send_notification(email, request['token'])
+        self.email_services.send_email(email, "Welcome", f"Welcome to our platform, your token is {request['token']}")
         self.logging.info(f'Notification sent to user: {email}')
         ch.basic_ack(delivery_tag=method.delivery_tag)

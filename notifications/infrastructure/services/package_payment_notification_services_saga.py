@@ -4,7 +4,8 @@ import logging
 from notifications.infrastructure.config.rabbit_config import setup_rabbitmq
 
 class PackagePaymentNotificationServicesSaga:
-    def __init__(self):
+    def __init__(self, email_services):
+        self.email_services=email_services
         self.queue_name = os.getenv('RABBIT_QUEUE_PACKAGE_PAYMENT_RECEIVE')
         self.exchange_name = os.getenv('RABBIT_EXCHANGE_NOTIFICATION')
         self.logger = logging.getLogger(__name__)
@@ -25,6 +26,6 @@ class PackagePaymentNotificationServicesSaga:
         package_uuid = request['package_uuid']
         payment_uuid = request['payment_uuid']
         # TODO: hablar con el equipo de paquetes para saber que cosas tiene el objeto paquete response, devolver en la llamada el identificador del paquete y decir que ya esta en camino
-        self.notification_service.send_notification(email, package_uuid)
+        self.email_services.send_email(email, "Payment", f"Your payment for package {package_uuid} has been received")
         self.logging.info(f'Notification sent to email:  {email}, package: {package_uuid}')
         ch.basic_ack(delivery_tag=method.delivery_tag)

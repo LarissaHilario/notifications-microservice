@@ -4,7 +4,8 @@ import logging
 from notifications.infrastructure.config.rabbit_config import setup_rabbitmq
 
 class ArrivePackageNotificationServicesSaga:
-    def __init__(self):
+    def __init__(self, email_services):
+        self.email_services=email_services
         self.queue_name = os.getenv('RABBIT_QUEUE_PACKAGE_ARRIVE')
         self.exchange_name = os.getenv('RABBIT_EXCHANGE_NOTIFICATION')
         self.logger = logging.getLogger(__name__)
@@ -24,6 +25,6 @@ class ArrivePackageNotificationServicesSaga:
         email = self.user_repository.get_user_by_id(request['email'])
         package_uuid = request['package_uuid']
         # TODO: hablar con el equipo de paquetes para saber que cosas tiene el objeto paquete response, devolver en la llamada el identificador del paquete y decir que ya esta en camino
-        self.notification_service.send_notification(email, package_uuid)
+        self.email_services.send_email(email, "Arrive package", f"Your package {package_uuid} has arrived")
         self.logging.info(f'Notification sent to email:  {email}, package: {package_uuid}')
         ch.basic_ack(delivery_tag=method.delivery_tag)
