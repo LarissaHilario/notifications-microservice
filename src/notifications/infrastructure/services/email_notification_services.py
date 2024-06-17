@@ -14,15 +14,20 @@ class EmailService:
         self.password = os.getenv('EMAIL_PASS')
 
     def send_email(self, to, subject, body):
-        msg = MIMEMultipart()
-        msg['From'] = self.user
-        msg['To'] = to
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain'))
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = self.user
+            msg['To'] = to
+            msg['Subject'] = subject
+            msg.attach(MIMEText(body, 'plain'))
 
-        server = smtplib.SMTP(self.host, self.port)
-        server.starttls()
-        server.login(self.user, self.password)
-        text = msg.as_string()
-        server.sendmail(self.user, to, text)
-        server.quit()
+            server = smtplib.SMTP(self.host, self.port)
+            server.starttls()
+            server.login(self.user, self.password)
+            text = msg.as_string()
+            server.sendmail(self.user, to, text)
+            server.quit()
+        except smtplib.SMTPConnectError as e:
+            print(f'Error while connecting to SMTP server: {str(e)}')
+        except Exception as e:
+            print(f'Error while sending email: {str(e)}')

@@ -24,8 +24,7 @@ class MemeberPaymentNotificationServicesSaga:
     def callback(self, ch, method, properties, body):
         request = json.loads(body)
         logging.info(f'Received message: {request}')
-        email = self.user_repository.get_user_by_id(request['email'])
+        email = request['email']
         product = request['product'] #que estas pagando, pues deberia mostrar aqui que el producto es una membresia
         self.email_services.send_email(email, "Payment", f"Your payment for {product} has been received")
         logging.info(f'Notification sent to email:  {email}, product: {product}')
-        ch.basic_ack(delivery_tag=method.delivery_tag)

@@ -22,9 +22,8 @@ class ArrivePackageNotificationServicesSaga:
     def callback(self, ch, method, properties, body):
         request = json.loads(body)
         logging.info(f'Received message: {request}')
-        email = self.user_repository.get_user_by_id(request['email'])
+        email = request['email']
         package_uuid = request['package_uuid']
         # TODO: hablar con el equipo de paquetes para saber que cosas tiene el objeto paquete response, devolver en la llamada el identificador del paquete y decir que ya esta en camino
         self.email_services.send_email(email, "Arrive package", f"Your package {package_uuid} has arrived")
         logging.info(f'Notification sent to email:  {email}, package: {package_uuid}')
-        ch.basic_ack(delivery_tag=method.delivery_tag)

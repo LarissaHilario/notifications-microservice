@@ -24,7 +24,7 @@ class NewUserNotificationServicesSaga:
     def callback(self, ch, method, properties, body):
         request = json.loads(body)
         logging.info(f'Received message: {request}')
-        email = self.user_repository.get_user_by_id(request['email'])
+        email = request['email']
+        logging.info(f'Email: {email}')
         self.email_services.send_email(email, "Welcome", f"Welcome to our platform, your token is {request['token']}")
         logging.info(f'Notification sent to user: {email}')
-        ch.basic_ack(delivery_tag=method.delivery_tag)
