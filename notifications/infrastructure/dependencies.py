@@ -1,3 +1,4 @@
+import threading
 from notifications.infrastructure.services.arrive_package_notification_services_saga import ArrivePackageNotificationServicesSaga
 from notifications.infrastructure.services.email_notification_services import EmailService
 from notifications.infrastructure.services.member_payment_notification_services_saga import MemeberPaymentNotificationServicesSaga
@@ -11,7 +12,7 @@ new_user_notification = NewUserNotificationServicesSaga(email_services)
 package_payment_notification = PackagePaymentNotificationServicesSaga(email_services)
 
 def init_queues():
-    arrive_package_notification.execute()
-    member_payment_notification.execute()
-    new_user_notification.execute()
-    package_payment_notification.execute()
+    threading.Thread(target=arrive_package_notification.execute).start()
+    threading.Thread(target=member_payment_notification.execute).start()
+    threading.Thread(target=new_user_notification.execute).start()
+    threading.Thread(target=package_payment_notification.execute).start()

@@ -10,7 +10,8 @@ from notifications.infrastructure.repositories.notification_model import (
 )
 import logging, sys, os
 
-logger = logging.getLogger(__name__)
+logging.getLogger("pika").setLevel(logging.CRITICAL)
+logging.basicConfig(level=logging.INFO)
 db_connection = DBConnection()
 model_notification = ModelNotification()
 notification_repository = NotificationRepository(model_notification)
