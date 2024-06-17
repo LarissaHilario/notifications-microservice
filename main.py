@@ -7,6 +7,7 @@ from notifications.infrastructure.repositories.repository_notification import (
 from notifications.infrastructure.repositories.notification_model import (
     ModelNotification,
 )
+
 db_connection = DBConnection()
 model_notification = ModelNotification()
 notification_repository = NotificationRepository(model_notification)
@@ -14,3 +15,9 @@ notification_repository = NotificationRepository(model_notification)
 app = FastAPI()
 
 init_routers_notifications(app)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    print("API is running")
+    uvicorn.run(app, host="0.0.0.0", port=3002)
