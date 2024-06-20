@@ -14,3 +14,4 @@ notification_repository = NotificationRepository(model_notification)
 app = FastAPI()
 
 init_routers_notifications(app)
+
