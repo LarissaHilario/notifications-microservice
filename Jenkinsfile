@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = 'python-hello-world'
+        DOCKER_IMAGE = 'service-notifications'
     }
     stages {
         stage('Build') {
@@ -11,7 +11,6 @@ pipeline {
                 }
             }
         }
-       
         stage('Deploy') {
             steps {
                 script {
