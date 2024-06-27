@@ -1,5 +1,5 @@
 from notifications.domain.repositories.notification_repository import NotificationsInterface
-from notifications.infrastructure.configurations.sns.sns_client_config import sns_client
+from notifications.infrastructure.configurations.sns.ses_client_config import ses_client
 from dotenv import load_dotenv
 from os import getenv
 import time
@@ -12,19 +12,24 @@ class NotificationRepository(NotificationsInterface):
         self.db_connection = db_connection
 
     def send_email(self, email: str, message: str, subject: str) -> None:
-        topic_arn = getenv("SNS_TOPIC_ARN")
-        response = sns_client.subscribe(
-            TopicArn=topic_arn,
-            Protocol="email",
-            Endpoint=email,
-            ReturnSubscriptionArn=True
+        response = ses_client.send_email(
+            Source=getenv("SES_SOURCE_EMAIL"),
+            Destination={
+                'ToAddresses': [
+                    email,
+                ]
+            },
+            Message={
+                'Subject': {
+                    'Data': subject,
+                    'Charset': 'UTF-8'
+                },
+                'Body': {
+                    'Text': {
+                        'Data': message,
+                        'Charset': 'UTF-8'
+                    }
+                }
+            }
         )
-        time.sleep(50)
-        response = sns_client.publish(
-            TopicArn=topic_arn,
-            Message=message,
-            Subject=subject
-        )
-        # sns_client.unsubscribe(
-        #     SubscriptionArn=subscription_arn
-        # )
+
