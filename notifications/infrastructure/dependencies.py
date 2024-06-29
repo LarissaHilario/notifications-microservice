@@ -15,9 +15,8 @@ from notifications.infrastructure.repositories.notification_repository import No
 from notifications.application.useCases.send_notification_use_case import SendNotificationUseCase
 
 db_connection = DBConnection()
-model_notification = ModelNotification()
 
-notification_repository = NotificationRepository(model_notification)
+notification_repository = NotificationRepository(db_connection)
 
 notification_use_case = SendNotificationUseCase(notification_repository)
 
@@ -25,7 +24,6 @@ arrive_package_notification = ArrivePackageNotificationServicesSaga(notification
 member_payment_notification = MemberPaymentNotificationServicesSaga(notification_use_case)
 new_user_notification = NewUserNotificationServicesSaga(notification_use_case)
 package_payment_notification = PackagePaymentNotificationServicesSaga(notification_use_case)
-
 
 def init_queues():
     threading.Thread(target=arrive_package_notification.execute).start()

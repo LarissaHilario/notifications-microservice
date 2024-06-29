@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-
+from notifications.domain.entities.notification import Notifications
 
 class NotificationsInterface(ABC):
 
     @abstractmethod
-    def send_email(self, email: str, message: str, subject: str) -> None:
+    def save_data(notification: Notifications) -> Notifications:
         pass
