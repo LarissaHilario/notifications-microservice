@@ -1,32 +1,28 @@
 pipeline {
     agent any
+    
     environment {
         DOCKER_IMAGE = 'service-notifications'
         PORT_MAPPING = '8000:8000'
         CONTAINER_NAME = 'service-notifications-container' 
     }
+    
     stages {
-        stage('Build') {
+        stage('Stop All Containers') {
             steps {
                 script {
-                    docker.build(DOCKER_IMAGE)
+                    sh 'docker stop $(docker ps -q)'
+                    
+                    sh 'docker rm $(docker ps -aq)'
                 }
             }
         }
-        stage('Deploy') {
+        
+        stage('Build and Deploy') {
             steps {
                 script {
-                    def runningContainerId = sh(script: "docker ps -q --filter 'ancestor=${DOCKER_IMAGE}'", returnStdout: true).trim()
-                    
-                    if (runningContainerId) {
-                        sh "docker stop ${runningContainerId}"
-                        
-                        sh "docker rm ${runningContainerId}"
-                    } else {
-                        echo "No hay contenedor en ejecución con la imagen ${DOCKER_IMAGE}"
-                    }
-
-                    docker.image(DOCKER_IMAGE).run("-p ${PORT_MAPPING} --name ${CONTAINER_NAME} -d")
+                    docker.build(DOCKER_IMAGE)
+                    sh "docker run -d -p ${PORT_MAPPING} --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
                 }
             }
         }
