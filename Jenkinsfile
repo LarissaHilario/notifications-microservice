@@ -5,6 +5,9 @@ pipeline {
         DOCKER_IMAGE = 'service-notifications'
         PORT_MAPPING = '8000:8000'
         CONTAINER_NAME = 'service-notifications-container' 
+        AWS_REGION = 'us-east-2'
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
     }
     
     stages {
@@ -22,7 +25,10 @@ pipeline {
             steps {
                 script {
                     docker.build(DOCKER_IMAGE)
-                    sh "docker run -d -p ${PORT_MAPPING} --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
+                    docker.run(env.SERVICE_NAME, "-e AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} \
+                        -e AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} \
+                        -e AWS_REGION=${env.AWS_REGION} \
+                        -p 8000:8000")
                 }
             }
         }
