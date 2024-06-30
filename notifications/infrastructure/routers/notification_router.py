@@ -3,4 +3,4 @@ from notifications.infrastructure.controllers.controller_notification import rou
 
 
 def init_routers_notifications(app):
-    app.include_router(routes_notification, prefix='/api/v1')
+    app.include_router(routes_notification, prefix='/notifications/api/v1')
