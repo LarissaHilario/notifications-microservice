@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     environment {
         DOCKER_IMAGE = 'service-notifications'
         PORT_MAPPING = '8000:8000'
@@ -9,26 +9,30 @@ pipeline {
         AWS_ACCESS_KEY_ID = "${env.AWS_ACCESS_KEY_ID}"
         AWS_SECRET_ACCESS_KEY = "${env.AWS_SECRET_ACCESS_KEY}"
     }
-    
+
     stages {
         stage('Stop Container and Remove') {
             steps {
                 script {
-                    sh "docker stop ${CONTAINER_NAME}"
-                    
-                    sh "docker rm ${CONTAINER_NAME}"
+                    def containerExists = sh(script: "docker ps -a -q -f name=${CONTAINER_NAME}", returnStdout: true).trim()
+                    if (containerExists) {
+                        sh "docker stop ${CONTAINER_NAME}"
+                        sh "docker rm ${CONTAINER_NAME}"
+                    } else {
+                        echo "Container ${CONTAINER_NAME} does not exist."
+                    }
                 }
             }
         }
-        
+
         stage('Build and Deploy') {
             steps {
                 script {
-                    docker.build(DOCKER_IMAGE)
-                    docker.run(env.SERVICE_NAME, "-e AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} \
-                        -e AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} \
-                        -e AWS_REGION=${env.AWS_REGION} \
-                        -p 8000:8000")
+                    def customImage = docker.build(DOCKER_IMAGE)
+                    customImage.run("-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                     -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                     -e AWS_REGION=${AWS_REGION} \
+                                     -p ${PORT_MAPPING}", CONTAINER_NAME)
                 }
             }
         }
