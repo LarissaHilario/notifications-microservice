@@ -38,3 +38,6 @@ class DBConnection:
             print(f"Error al conectar a la base de datos: {str(e)}")
             logging.error(f"Error al conectar a la base de datos: {str(e)}")
             self.Session = None
+
+    def get_session(self):
+        return self.Session()
