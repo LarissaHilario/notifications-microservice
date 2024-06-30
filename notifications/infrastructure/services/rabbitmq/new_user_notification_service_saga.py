@@ -32,7 +32,7 @@ class NewUserNotificationServicesSaga:
     def callback(self, ch, method, properties, body):
         request = json.loads(body)
         logging.info(f'Received message: {request}')
-        uuid_user = request['uud']
+        uuid_user = request['uuid']
         email = request['email']
         name = request['name']
         message_formatted = formatter_message(
@@ -41,5 +41,4 @@ class NewUserNotificationServicesSaga:
             getenv("SNS_PHONE_NUMBER_SUPPORT")
         )
         subject = "Bienvenido a 90-Minutos"
-        self.notification_use_case.execute(
-            uuid_user, email, message_formatted, subject)
+        self.notification_use_case.execute(uuid_user, email, message_formatted, subject)

@@ -25,10 +25,11 @@ class MemberPaymentNotificationServicesSaga:
     def callback(self, ch, method, properties, body):
         request = json.loads(body)
         logging.info(f'Received message: {request}')
-        email = request['data']['email']
-        product = request['data']['product']
+        email = request['email']
+        user_uuid = request['userUUID']
+        order = request['orderUUID']
         subject = "Payment"
-        self.notification_use_case.execute(email, f"Your payment for {product} has been received", subject)
+        self.notification_use_case.execute(user_uuid, email, f"Your payment for {order} has been received", subject)
         # email = request['email']
         # product = request['product']  # que estas pagando, pues deberia mostrar aqui que el producto es una membresia
         # self.email_services.send_email(email, "Payment", f"Your payment for {product} has been received")

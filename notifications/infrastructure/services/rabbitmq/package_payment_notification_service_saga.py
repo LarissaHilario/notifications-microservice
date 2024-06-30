@@ -25,13 +25,8 @@ class PackagePaymentNotificationServicesSaga:
     def callback(self, ch, method, properties, body):
         request = json.loads(body)
         logging.info(f'Received message: {request}')
-        email = request['data']['email']
-        package_uuid = request['data']['package_uuid']
+        email = request['email']
+        user_uuid = request['userUUID']
+        order = request['orderUUID']
         subject = "Payment"
-        self.notification_use_case.execute(email, f"Your payment for package {package_uuid} has been received", subject)
-        # email = request['email']
-        # package_uuid = request['package_uuid']
-        # payment_uuid = request['payment_uuid']
-        # # TODO: hablar con el equipo de paquetes para saber que cosas tiene el objeto paquete response, devolver en la llamada el identificador del paquete y decir que ya esta en camino
-        # self.email_services.send_email(email, "Payment", f"Your payment for package {package_uuid} has been received")
-        # logging.info(f'Notification sent to email:  {email}, package: {package_uuid}')
+        self.notification_use_case.execute(user_uuid, email, f"Your payment for package {order} has been received", subject)
