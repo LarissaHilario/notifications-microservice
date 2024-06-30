@@ -8,12 +8,12 @@ pipeline {
     }
     
     stages {
-        stage('Stop All Containers') {
+        stage('Stop Container and Remove') {
             steps {
                 script {
-                    sh 'docker stop $(docker ps -q)'
+                    sh "docker stop ${CONTAINER_NAME}"
                     
-                    sh 'docker rm $(docker ps -aq)'
+                    sh "docker rm ${CONTAINER_NAME}"
                 }
             }
         }
