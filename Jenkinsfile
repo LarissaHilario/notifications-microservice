@@ -28,13 +28,12 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                   def customImage = docker.build(DOCKER_IMAGE)
-                   
-                    docker run -d -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                        -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                        -e AWS_REGION=${AWS_REGION} \
-                        -p ${PORT_MAPPING} \
-                        --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+                    def customImage = docker.build(DOCKER_IMAGE)
+                    sh "docker run -d -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} " +
+                       "-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} " +
+                       "-e AWS_REGION=${AWS_REGION} " +
+                       "-p ${PORT_MAPPING} " +
+                       "--name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
                 }
             }
         }
