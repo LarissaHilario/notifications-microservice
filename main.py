@@ -1,16 +1,18 @@
+import uvicorn
 from fastapi import FastAPI
+
+from notifications.infrastructure.dependencies import init_queues
 from notifications.infrastructure.routers.notification_router import init_routers_notifications
-from database.database import DBConnection
-from notifications.infrastructure.repositories.repository_notification import (
-    NotificationRepository,
-)
-from notifications.infrastructure.repositories.notification_model import (
-    ModelNotification,
-)
-db_connection = DBConnection()
-model_notification = ModelNotification()
-notification_repository = NotificationRepository(model_notification)
 
 app = FastAPI()
 
 init_routers_notifications(app)
+
+
+def main():
+    init_queues()
+    uvicorn.run("main:app", host="localhost", port=8000, reload=True)
+
+
+if __name__ == "__main__":
+    main()
