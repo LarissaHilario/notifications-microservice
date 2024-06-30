@@ -12,9 +12,11 @@ load_dotenv()
 
 
 class ArrivePackageNotificationServicesSaga:
-    def __init__(self, notification_use_case):
+    def __init__(self, notification_use_case, get_user_info_req, response):
+        self.user_response = response
         logging.basicConfig(level=logging.INFO)
         self.notification_use_case = notification_use_case
+        self.get_user_info_req = get_user_info_req
         self.queue_name = Queue.QUEUE_ARRIVE_PACKAGE.value["queue"]
         self.exchange_name = Queue.QUEUE_ARRIVE_PACKAGE.value["exchange"]
         self.routing_key = Queue.QUEUE_ARRIVE_PACKAGE.value["routing_key"]
@@ -30,18 +32,11 @@ class ArrivePackageNotificationServicesSaga:
     def callback(self, ch, method, properties, body):
         request = json.loads(body)
         logging.info(f'Received message: {request}')
-        email = request['email']
-        name = request['name']
+        self.get_user_info_req.execute(request['clientId'])
         message_formatted = formatter_message(
-            FEEDBACK_REQUEST_EMAIL, name,
+            FEEDBACK_REQUEST_EMAIL, self.user_response.get_name(),
             getenv("SNS_EMAIL_SUPPORT"),
             getenv("SNS_PHONE_NUMBER_SUPPORT")
         )
         subject = "Cuéntanos tu experiencia con 90-Minutos"
-        self.notification_use_case.execute(email, message_formatted, subject)
-        # email = request['email']
-        # package_uuid = request['package_uuid']
-        # TODO: hablar con el equipo de paquetes para saber que cosas tiene el objeto paquete response, devolver en
-        #  la llamada el identificador del paquete y decir que ya esta en camino
-        # self.email_services.send_email(email, "Arrive package", f"Your package {package_uuid} has arrived")
-        # logging.info(f'Notification sent to email:  {email}, package: {package_uuid}')
+        self.notification_use_case.execute(request['clientId'], self.user_response.get_email(), message_formatted, subject)

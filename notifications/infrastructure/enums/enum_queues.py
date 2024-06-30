@@ -22,3 +22,13 @@ class Queue(Enum):
             "exchange": "notification_90_minutes",
             "routing_key": "payment.member.notification"
     }
+    QUEUE_GET_INFO_USER_REQ = {
+        "queue": "get_user_info_notification_req",
+        "exchange": "notification_90_minutes",
+        "routing_key": "get_user_info_req.notification"
+    }
+    QUEUE_GET_INFO_USER_RES = {
+        "queue": "get_user_info_notification_res",
+        "exchange": "notification_90_minutes",
+        "routing_key": "get_user_info_res.notification"
+    }

@@ -10,7 +10,7 @@ ssl_context.verify_mode = ssl.CERT_NONE
 ssl_options=pika.SSLOptions(ssl_context)
 
 load_dotenv()
-hostname = os.getenv('RABBITMQ_HOST', 'localhost')
+hostname = os.getenv('RABBITMQ_HOST')
 protocol = os.getenv('RABBITMQ_PROTOCOL')
 user = os.getenv('RABBITMQ_USER')
 password = os.getenv('RABBITMQ_PASS')
