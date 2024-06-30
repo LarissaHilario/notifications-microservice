@@ -16,16 +16,15 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-
                     def runningContainerId = sh(script: "docker ps -q --filter 'ancestor=${DOCKER_IMAGE}'", returnStdout: true).trim()
                     
                     if (runningContainerId) {
                         sh "docker stop ${runningContainerId}"
+                        
+                        sh "docker rm ${runningContainerId}"
                     } else {
                         echo "No hay contenedor en ejecución con la imagen ${DOCKER_IMAGE}"
                     }
-                    
-                    sh "docker rm ${runningContainerId}"
 
                     docker.image(DOCKER_IMAGE).run("-p ${PORT_MAPPING} --name ${CONTAINER_NAME} -d")
                 }
