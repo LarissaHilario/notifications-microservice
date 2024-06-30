@@ -11,9 +11,9 @@ class GetUserInfoReqServicesSaga:
         self.exchange_name = Queue.QUEUE_GET_INFO_USER_REQ.value["exchange"]
         self.routing_key = Queue.QUEUE_GET_INFO_USER_REQ.value["routing_key"]
 
-    def execute(self):
+    def execute(self, clientUUID):
         try:
             channel =setup_rabbitmq(self.queue_name, self.exchange_name, self.routing_key)
-            channel.basic_publish(queue=self.queue_name, routing_key=self.routing_key, exchange=self.exchange_name, body="send data, ignore this message, dont have any valor")
+            channel.basic_publish(queue=self.queue_name, routing_key=self.routing_key, exchange=self.exchange_name, body=clientUUID)
         except Exception as e:
             logging.error(f'Error while consuming message, New User queue: {str(e)}')
