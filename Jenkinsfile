@@ -6,8 +6,6 @@ pipeline {
         PORT_MAPPING = '8000:8000'
         CONTAINER_NAME = 'service-notifications-container'
         AWS_REGION = 'us-east-2'
-        AWS_ACCESS_KEY_ID = "${env.AWS_ACCESS_KEY_ID}"
-        AWS_SECRET_ACCESS_KEY = "${env.AWS_SECRET_ACCESS_KEY}"
         PARAMETER_PATH = '/90minutes/dev/services/notifications/'
     }
 
@@ -72,20 +70,27 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    def customImage = docker.build(DOCKER_IMAGE)
+                    def customImage = docker.build(env.DOCKER_IMAGE)
                     def runCommand = "docker run -d " +
-                                     "-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} " +
-                                     "-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} " +
-                                     "-e AWS_REGION=${AWS_REGION} " +
-                                     "-p ${PORT_MAPPING} " +
-                                     "--name ${CONTAINER_NAME} "
-                    
-                    // Add the fetched environment variables to the Docker run command
-                    envVars.each { key, value ->
-                        runCommand += "-e ${key}=${value} "
-                    }
-                    
-                    runCommand += "${DOCKER_IMAGE}"
+                                     "-e AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} " +
+                                     "-e AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} " +
+                                     "-e AWS_REGION=${env.AWS_REGION} " +
+                                     "-e DB_HOST_MYSQL=${env.DB_HOST_MYSQL} " +
+                                     "-e DB_PORT_MYSQL=${env.DB_PORT_MYSQL} " +
+                                     "-e DB_USER_MYSQL=${env.DB_USER_MYSQL} " +
+                                     "-e DB_PASSWORD_MYSQL=${env.DB_PASSWORD_MYSQL} " +
+                                     "-e DB_DATABASE_MYSQL=${env.DB_DATABASE_MYSQL} " +
+                                     "-e SNS_TOPIC_ARN=${env.SNS_TOPIC_ARN} " +
+                                     "-e SNS_EMAIL_SUPPORT=${env.SNS_EMAIL_SUPPORT} " +
+                                     "-e SNS_PHONE_NUMBER_SUPPORT=${env.SNS_PHONE_NUMBER_SUPPORT} " +
+                                     "-e RABBITMQ_HOST=${env.RABBITMQ_HOST} " +
+                                     "-e RABBITMQ_PROTOCOL=${env.RABBITMQ_PROTOCOL} " +
+                                     "-e RABBITMQ_USER=${env.RABBITMQ_USER} " +
+                                     "-e RABBITMQ_PASS=${env.RABBITMQ_PASS} " +
+                                     "-e RABBITMQ_PORT=${env.RABBITMQ_PORT} " +
+                                     "-p ${env.PORT_MAPPING} " +
+                                     "--name ${env.CONTAINER_NAME} " +
+                                     "${env.DOCKER_IMAGE}"
 
                     // Run the Docker container with the environment variables
                     sh runCommand
