@@ -29,8 +29,8 @@ pipeline {
         stage('Fetch Environment Variables') {
             steps {
                 script {
-                    // Fetch parameters from Parameter Store
-                    def envVars = [
+                    // Define the list of environment variables to fetch
+                    def envKeys = [
                         'DB.HOST_MYSQL',
                         'DB.PORT_MYSQL',
                         'DB.USER_MYSQL',
@@ -44,12 +44,18 @@ pipeline {
                         'RABBITMQ_USER',
                         'RABBITMQ_PASS',
                         'RABBITMQ_PORT'
-                    ].collectEntries { key ->
+                    ]
+
+                    // Initialize envVars map
+                    def envVars = [:]
+
+                    // Fetch parameters from Parameter Store and store in envVars map
+                    envKeys.each { key ->
                         def value = sh(script: "aws ssm get-parameter --name ${PARAMETER_PATH}${key} --with-decryption --query Parameter.Value --output text", returnStdout: true).trim()
-                        [key, value]
+                        envVars[key.replaceAll('\\.', '_')] = value
                     }
 
-                    // Set environment variables
+                    // Set environment variables in the current Jenkins environment
                     envVars.each { key, value ->
                         env[key] = value
                     }
@@ -69,12 +75,13 @@ pipeline {
                                      "--name ${CONTAINER_NAME} "
                     
                     // Add the fetched environment variables to the Docker run command
-                    envVars.each { key, value ->
-                        runCommand += "-e ${key}=${value} "
+                    env.keySet().findAll { it.startsWith('DB_') || it.startsWith('SNS_') || it.startsWith('RABBITMQ_') }.each { key ->
+                        runCommand += "-e ${key}=${env[key]} "
                     }
                     
                     runCommand += "${DOCKER_IMAGE}"
 
+                    // Run the Docker container with the environment variables
                     sh runCommand
                 }
             }
