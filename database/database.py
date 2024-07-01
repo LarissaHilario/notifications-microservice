@@ -14,11 +14,11 @@ class DBConnection:
     def __init__(self):
         load_dotenv()
 
-        host = os.getenv("DB.HOST_MYSQL")
-        port = os.getenv("DB.PORT_MYSQL")
-        user = os.getenv("DB.USER_MYSQL")
-        password = os.getenv("DB.PASSWORD_MYSQL")
-        database = os.getenv("DB.DATABASE_MYSQL")
+        host = os.getenv("DB_HOST_MYSQL")
+        port = os.getenv("DB_PORT_MYSQL")
+        user = os.getenv("DB_USER_MYSQL")
+        password = os.getenv("DB_PASSWORD_MYSQL")
+        database = os.getenv("DB_DATABASE_MYSQL")
 
         try:
             conn = pymysql.connect(host=host, user=user, password=password)
