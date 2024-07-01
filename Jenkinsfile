@@ -63,7 +63,7 @@ pipeline {
 
                     // Set environment variables in the current Jenkins environment
                     envVars.each { key, value ->
-                        env[key] = value
+                        env."${key}" = "${value}"
                     }
                 }
             }
