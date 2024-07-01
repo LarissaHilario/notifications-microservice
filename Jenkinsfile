@@ -55,6 +55,12 @@ pipeline {
                         envVars[key.replaceAll('\\.', '_')] = value
                     }
 
+                    // Print out envVars for debugging
+                    echo "Fetched Environment Variables:"
+                    envVars.each { key, value ->
+                        echo "${key}=${value}"
+                    }
+
                     // Set environment variables in the current Jenkins environment
                     envVars.each { key, value ->
                         env[key] = value
@@ -75,8 +81,8 @@ pipeline {
                                      "--name ${CONTAINER_NAME} "
                     
                     // Add the fetched environment variables to the Docker run command
-                    env.keySet().findAll { it.startsWith('DB_') || it.startsWith('SNS_') || it.startsWith('RABBITMQ_') }.each { key ->
-                        runCommand += "-e ${key}=${env[key]} "
+                    envVars.each { key, value ->
+                        runCommand += "-e ${key}=${value} "
                     }
                     
                     runCommand += "${DOCKER_IMAGE}"
