@@ -29,11 +29,11 @@ pipeline {
                 script {
                     // Define the list of environment variables to fetch
                     def envKeys = [
-                        'DB.HOST_MYSQL',
-                        'DB.PORT_MYSQL',
-                        'DB.USER_MYSQL',
-                        'DB.PASSWORD_MYSQL',
-                        'DB.DATABASE_MYSQL',
+                        'DB_HOST_MYSQL',
+                        'DB_PORT_MYSQL',
+                        'DB_USER_MYSQL',
+                        'DB_PASSWORD_MYSQL',
+                        'DB_DATABASE_MYSQL',
                         'SNS_TOPIC_ARN',
                         'SNS_EMAIL_SUPPORT',
                         'SNS_PHONE_NUMBER_SUPPORT',
